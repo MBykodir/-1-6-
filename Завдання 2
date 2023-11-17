@@ -1,0 +1,109 @@
+#include <iostream>
+#include <vector>
+
+class Polynomial {
+private:
+    std::vector<double> coefficients; // Коефіцієнти полінома, де coefficients[i] - це коефіцієнт при x^i
+
+public:
+    // Конструктор за замовчуванням
+    Polynomial() {}
+
+    // Конструктор з передачею вектора коефіцієнтів
+    Polynomial(const std::vector<double>& coeffs) : coefficients(coeffs) {}
+
+    // Отримання ступеня полінома
+    int getDegree() const {
+        return coefficients.size() - 1;
+    }
+
+    // Отримання коефіцієнта при заданому ступені
+    double getCoefficient(int degree) const {
+        if (degree >= 0 && degree < coefficients.size()) {
+            return coefficients[degree];
+        } else {
+            return 0.0;
+        }
+    }
+
+    // Зміна коефіцієнта при заданому ступені
+    void setCoefficient(int degree, double value) {
+        if (degree >= 0) {
+            if (degree >= coefficients.size()) {
+                coefficients.resize(degree + 1, 0.0);
+            }
+            coefficients[degree] = value;
+        }
+    }
+
+    // Операція додавання поліномів
+    Polynomial operator+(const Polynomial& other) const {
+        int resultDegree = std::max(getDegree(), other.getDegree());
+        Polynomial result;
+        for (int i = 0; i <= resultDegree; ++i) {
+            result.setCoefficient(i, getCoefficient(i) + other.getCoefficient(i));
+        }
+        return result;
+    }
+
+    // Операція віднімання поліномів
+    Polynomial operator-(const Polynomial& other) const {
+        int resultDegree = std::max(getDegree(), other.getDegree());
+        Polynomial result;
+        for (int i = 0; i <= resultDegree; ++i) {
+            result.setCoefficient(i, getCoefficient(i) - other.getCoefficient(i));
+        }
+        return result;
+    }
+
+    // Операція множення поліномів
+    Polynomial operator*(const Polynomial& other) const {
+        int resultDegree = getDegree() + other.getDegree();
+        Polynomial result;
+        for (int i = 0; i <= getDegree(); ++i) {
+            for (int j = 0; j <= other.getDegree(); ++j) {
+                result.setCoefficient(i + j, result.getCoefficient(i + j) + getCoefficient(i) * other.getCoefficient(j));
+            }
+        }
+        return result;
+    }
+
+    // Вивід полінома на екран
+    void printPolynomial() const {
+        for (int i = getDegree(); i >= 0; --i) {
+            if (getCoefficient(i) != 0.0) {
+                if (i < getDegree()) {
+                    std::cout << " + ";
+                }
+                std::cout << getCoefficient(i);
+                if (i > 0) {
+                    std::cout << "x^" << i;
+                }
+            }
+        }
+        std::cout << std::endl;
+    }
+};
+
+int main() {
+    // Приклад використання класу Polynomial
+    Polynomial poly1({1, -2, 3}); // Поліном: x^2 - 2x + 3
+    Polynomial poly2({0, 4, 1});  // Поліном: 4x + 1
+
+    // Додавання поліномів
+    Polynomial sumPoly = poly1 + poly2;
+    std::cout << "Результат додавання: ";
+    sumPoly.printPolynomial();
+
+    // Віднімання поліномів
+    Polynomial diffPoly = poly1 - poly2;
+    std::cout << "Результат віднімання: ";
+    diffPoly.printPolynomial();
+
+    // Множення поліномів
+    Polynomial productPoly = poly1 * poly2;
+    std::cout << "Результат множення: ";
+    productPoly.printPolynomial();
+
+    return 0;
+}
