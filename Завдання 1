@@ -1,0 +1,144 @@
+#include <iostream>
+#include <vector>
+#include <stdexcept>
+
+class Matrix {
+private:
+    std::vector<std::vector<int>> data;
+    size_t rows;
+    size_t cols;
+
+public:
+    // Конструктор за замовчуванням
+    Matrix() : rows(0), cols(0) {}
+
+    // Конструктор з параметрами
+    Matrix(size_t rows, size_t cols) : rows(rows), cols(cols) {
+        data.resize(rows, std::vector<int>(cols, 0));
+    }
+
+    // Метод для отримання значення елемента матриці
+    int getElement(size_t row, size_t col) const {
+        if (row < rows && col < cols) {
+            return data[row][col];
+        } else {
+            throw std::out_of_range("Недійсний індекс елемента матриці");
+        }
+    }
+
+    // Метод для встановлення значення елемента матриці
+    void setElement(size_t row, size_t col, int value) {
+        if (row < rows && col < cols) {
+            data[row][col] = value;
+        } else {
+            throw std::out_of_range("Недійсний індекс елемента матриці");
+        }
+    }
+
+    // Метод для отримання кількості рядків матриці
+    size_t getRows() const {
+        return rows;
+    }
+
+    // Метод для отримання кількості стовпців матриці
+    size_t getCols() const {
+        return cols;
+    }
+
+    // Операція додавання матриць
+    Matrix operator+(const Matrix& other) const {
+        if (rows == other.rows && cols == other.cols) {
+            Matrix result(rows, cols);
+            for (size_t i = 0; i < rows; ++i) {
+                for (size_t j = 0; j < cols; ++j) {
+                    result.setElement(i, j, data[i][j] + other.data[i][j]);
+                }
+            }
+            return result;
+        } else {
+            throw std::invalid_argument("Неможливо виконати операцію додавання: розміри матриць не збігаються");
+        }
+    }
+
+    // Операція віднімання матриць
+    Matrix operator-(const Matrix& other) const {
+        if (rows == other.rows && cols == other.cols) {
+            Matrix result(rows, cols);
+            for (size_t i = 0; i < rows; ++i) {
+                for (size_t j = 0; j < cols; ++j) {
+                    result.setElement(i, j, data[i][j] - other.data[i][j]);
+                }
+            }
+            return result;
+        } else {
+            throw std::invalid_argument("Неможливо виконати операцію віднімання: розміри матриць не збігаються");
+        }
+    }
+
+    // Операція множення матриць
+    Matrix operator*(const Matrix& other) const {
+        if (cols == other.rows) {
+            Matrix result(rows, other.cols);
+            for (size_t i = 0; i < rows; ++i) {
+                for (size_t j = 0; j < other.cols; ++j) {
+                    int sum = 0;
+                    for (size_t k = 0; k < cols; ++k) {
+                        sum += data[i][k] * other.data[k][j];
+                    }
+                    result.setElement(i, j, sum);
+                }
+            }
+            return result;
+        } else {
+            throw std::invalid_argument("Неможливо виконати операцію множення: кількість стовпців першої матриці не дорівнює кількості рядків другої матриці");
+        }
+    }
+
+    // Вивід матриці на екран
+    void printMatrix() const {
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < cols; ++j) {
+                std::cout << data[i][j] << " ";
+            }
+            std::cout << std::endl;
+        }
+    }
+};
+
+int main() {
+    // Приклад використання класу Matrix
+    Matrix matrix1(2, 3);
+    matrix1.setElement(0, 0, 1);
+    matrix1.setElement(0, 1, 2);
+    matrix1.setElement(0, 2, 3);
+    matrix1.setElement(1, 0, 4);
+    matrix1.setElement(1, 1, 5);
+    matrix1.setElement(1, 2, 6);
+
+    Matrix matrix2(2, 3);
+    matrix2.setElement(0, 0, 7);
+    matrix2.setElement(0, 1, 8);
+    matrix2.setElement(0, 2, 9);
+    matrix2.setElement(1, 0, 10);
+    matrix2.setElement(1, 1, 11);
+    matrix2.setElement(1, 2, 12);
+
+    // Додавання матриць
+    try {
+        Matrix sumMatrix = matrix1 + matrix2;
+        std::cout << "Результат додавання:" << std::endl;
+        sumMatrix.printMatrix();
+    } catch (const std::exception& e) {
+        std::cerr << "Помилка: " << e.what() << std::endl;
+    }
+
+    // Віднімання матриць
+    try {
+        Matrix diffMatrix = matrix1 - matrix2;
+        std::cout << "Результат віднімання:" << std::endl;
+        diffMatrix.printMatrix();
+    } catch (const std::exception& e) {
+        std::cerr << "Помилка: " << e.what() << std::endl;
+    }
+
+    // М
